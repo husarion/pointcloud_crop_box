@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_HPP_
-#define POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_HPP_
+#ifndef POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_
+#define POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_
 
 #include <memory>
 #include <string>
@@ -33,9 +33,9 @@
 
 #include "pointcloud_boxcrop/pointcloud_boxcrop_params.hpp"
 
-class PointcloudBoxcrop : public rclcpp::Node {
+class PointcloudBoxcropNode : public rclcpp::Node {
 public:
-  PointcloudBoxcrop();
+  PointcloudBoxcropNode();
 
 private:
   void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
@@ -62,4 +62,4 @@ private:
   tf2_ros::TransformListener tf_listener_;
 };
 
-#endif // POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_HPP_
+#endif // POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_

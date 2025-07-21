@@ -32,7 +32,7 @@ include_directories(include ${PCL_INCLUDE_DIRS})
 generate_parameter_library(pointcloud_boxcrop_params
                            src/pointcloud_boxcrop_params.yaml)
 
-add_executable(pointcloud_boxcrop_node src/pointcloud_boxcrop.cpp
+add_executable(pointcloud_boxcrop_node src/main.cpp
                                        src/pointcloud_boxcrop_node.cpp)
 
 ament_target_dependencies(pointcloud_boxcrop_node ${PACKAGE_DEPENDENCIES})
