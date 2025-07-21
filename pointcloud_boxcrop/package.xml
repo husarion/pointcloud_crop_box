@@ -1,29 +1,31 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>pointcloud2_box_filter</name>
-  <version>0.0.0</version>
+  <name>pointcloud_boxcrop</name>
+  <version>0.1.0</version>
   <description>3D box filter for Pointcloud2</description>
   <maintainer email="support@husarion.com">Husarion</maintainer>
-  <license>Apache-2.0</license>
+  <license>Apache License 2.0</license>
+
+  <url type="website">https://husarion.com</url>
+  <url type="repository">https://github.com/husarion/husarion_ugv_ros</url>
+  <url type="bugtracker">https://github.com/husarion/husarion_ugv_ros/issues</url>
+
+  <author email="jakub.delicat@husarion.com">Jakub Delicat</author>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend>
-  <depend>sensor_msgs</depend>
+  <depend>generate_parameter_library</depend>
   <depend>pcl_conversions</depend>
   <depend>pcl_ros</depend>
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>tf2_sensor_msgs</depend>
+  <depend>vision_msgs</depend>
 
-
-  <exec_depend>generate_parameter_library</exec_depend>
-  <build_depend>generate_parameter_library</build_depend>
-  <build_export_depend>generate_parameter_library</build_export_depend>
-  
   <export>
     <build_type>ament_cmake</build_type>
   </export>
 </package>
-<!-- This package was generated using the Turtle Nest ROS 2 package creator -->

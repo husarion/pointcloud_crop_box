@@ -1,5 +1,5 @@
 /**:
-  pointcloud2_box_filter:
+  pointcloud_boxcrop:
     ros__parameters:
       input_topic: "/panther/velodyne_points"
       output_topic: "/points_filtered"

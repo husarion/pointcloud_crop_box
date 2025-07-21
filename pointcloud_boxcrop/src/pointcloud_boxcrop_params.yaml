@@ -1,4 +1,4 @@
-pointcloud2_box_filter_params:
+pointcloud_boxcrop_params:
   input_topic:
     type: string
     default_value: "/points_raw"
