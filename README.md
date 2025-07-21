@@ -43,31 +43,23 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 
 ## Parameters
 
-All parameters are set via the `pointcloud_boxcrop_params` namespace.
-
-| Name             | Type    | Default     | Description |
-|------------------|---------|-------------|-------------|
-| `input_topic`    | string  | `/points_raw`      | Topic to subscribe for input point cloud |
-| `output_topic`   | string  | `/points_filtered` | Topic to publish filtered point cloud |
-| `target_frame`   | string  | `base_link`        | Frame to which point cloud is transformed |
-| `min_x`          | double  | `-1.0`       | Minimum X boundary of the crop box |
-| `max_x`          | double  | `1.0`        | Maximum X boundary of the crop box |
-| `min_y`          | double  | `-1.0`       | Minimum Y boundary of the crop box |
-| `max_y`          | double  | `1.0`        | Maximum Y boundary of the crop box |
-| `min_z`          | double  | `-1.0`       | Minimum Z boundary of the crop box |
-| `max_z`          | double  | `1.0`        | Maximum Z boundary of the crop box |
-| `negative`       | bool    | `false`      | If true, keep points **outside** the box instead of inside |
+- `input_topic` [*string*, default: **"/points_raw"**]: Topic to subscribe for input PointCloud2 data.
+- `output_topic` [*string*, default: **"/points_filtered"**]: Topic to publish filtered PointCloud2 data.
+- `target_frame` [*string*, default: **"base_link"**]: Target TF frame to transform the point cloud into.
+- `min_x` [*double*, default: **-1.0**]: Minimum X boundary of the crop box.
+- `max_x` [*double*, default: **1.0**]: Maximum X boundary of the crop box.
+- `min_y` [*double*, default: **-1.0**]: Minimum Y boundary of the crop box.
+- `max_y` [*double*, default: **1.0**]: Maximum Y boundary of the crop box.
+- `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
+- `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
+- `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop box instead of inside.
 
 ---
 
 ## Example Launch
 
+To show the result of the filtering you can follow our autonomy example in [husarion-ugv-autonomy](github.com/husarion/husarion-ugv-autonomy) and run configured launch:
+
 ```bash
-ros2 run pointcloud_boxcrop pointcloud_boxcrop_node --ros-args \
-  -p input_topic:=/velodyne_points \
-  -p output_topic:=/points_filtered \
-  -p target_frame:=base_link \
-  -p min_x:=-2.0 -p max_x:=2.0 \
-  -p min_y:=-1.0 -p max_y:=1.0 \
-  -p min_z:=-1.5 -p max_z:=0.5 \
-  -p negative:=false
+ros2 launch  pointcloud_boxcrop pointcloud_boxcrop_launch.py
+```
