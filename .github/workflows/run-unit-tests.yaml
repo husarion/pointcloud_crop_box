@@ -51,6 +51,6 @@ jobs:
                 "cmake-args": ["-DCMAKE_BUILD_TYPE=Release"]
               },
               "test": {
-                "packages-up-to": ["pointcloud_boxcrop"],
+                "packages-up-to": ["pointcloud_boxcrop"]
               }
             }
