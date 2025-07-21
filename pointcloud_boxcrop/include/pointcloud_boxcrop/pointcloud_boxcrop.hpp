@@ -18,6 +18,7 @@
 #include <memory>
 #include <string>
 
+#include <Eigen/Core>
 #include <pcl/filters/crop_box.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions/pcl_conversions.h>
@@ -37,7 +38,20 @@ public:
   PointcloudBoxcrop();
 
 private:
-  void pointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+  void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+
+  geometry_msgs::msg::TransformStamped
+  GetTransform(const std::string &source_frame);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr
+  TransformCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
+                 const geometry_msgs::msg::TransformStamped &transform_stamped,
+                 Eigen::Matrix4f &transform_matrix);
+
+  pcl::PointCloud<pcl::PointXYZ>::Ptr
+  Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud);
+
+  vision_msgs::msg::BoundingBox3D CreateBoundingBox();
 
   std::shared_ptr<pointcloud_boxcrop_params::ParamListener> param_listener_;
   pointcloud_boxcrop_params::Params params_;

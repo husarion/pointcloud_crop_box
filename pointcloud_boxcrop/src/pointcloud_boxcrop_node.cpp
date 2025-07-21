@@ -12,14 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "rclcpp/rclcpp.hpp"
+#include <iostream>
+#include <memory>
+#include <stdexcept>
+
+#include <rclcpp/rclcpp.hpp>
 
 #include "pointcloud_boxcrop/pointcloud_boxcrop.hpp"
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<PointcloudBoxcrop>();
-  rclcpp::spin(node);
+  auto pointcloud_boxcrop = std::make_shared<PointcloudBoxcrop>();
+
+  try {
+    rclcpp::spin(pointcloud_boxcrop);
+  } catch (const std::runtime_error &e) {
+    std::cerr << "[" << pointcloud_boxcrop->get_name()
+              << "] Caught exception: " << e.what() << std::endl;
+  }
+
+  std::cout << "[" << pointcloud_boxcrop->get_name() << "] Shutting down"
+            << std::endl;
   rclcpp::shutdown();
   return 0;
 }
