@@ -20,7 +20,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 
-#include "pointcloud_boxcrop/pointcloud_boxcrop.hpp"
+#include "pointcloud_boxcrop/pointcloud_boxcrop_node.hpp"
 
 PointcloudBoxcropNode::PointcloudBoxcropNode()
     : rclcpp::Node("pointcloud_boxcrop"), tf_buffer_(this->get_clock()),

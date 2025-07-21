@@ -18,7 +18,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "pointcloud_boxcrop/pointcloud_boxcrop.hpp"
+#include "pointcloud_boxcrop/pointcloud_boxcrop_node.hpp"
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
