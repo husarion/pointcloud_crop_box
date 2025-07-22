@@ -45,11 +45,13 @@ private:
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   TransformCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
-                 const geometry_msgs::msg::TransformStamped &transform_stamped,
-                 Eigen::Matrix4f &transform_matrix);
+                 const geometry_msgs::msg::TransformStamped &transform_stamped);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr
   Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud);
+
+  geometry_msgs::msg::TransformStamped InverseTransform(
+      const geometry_msgs::msg::TransformStamped &transform_stamped);
 
   vision_msgs::msg::BoundingBox3D CreateBoundingBox();
 

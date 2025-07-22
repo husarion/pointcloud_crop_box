@@ -11,6 +11,7 @@ set(PACKAGE_DEPENDENCIES
     pcl_conversions
     pcl_ros
     tf2
+    tf2_geometry_msgs
     tf2_ros
     tf2_sensor_msgs
     rclcpp

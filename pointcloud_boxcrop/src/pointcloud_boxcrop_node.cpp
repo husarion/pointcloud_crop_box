@@ -18,7 +18,9 @@
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 #include <rclcpp/rclcpp.hpp>
+
 #include <sensor_msgs/msg/point_cloud2.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "pointcloud_boxcrop/pointcloud_boxcrop_node.hpp"
 
@@ -56,9 +58,8 @@ void PointcloudBoxcropNode::PointcloudCallback(
     return;
   }
 
-  Eigen::Matrix4f transform_matrix = Eigen::Matrix4f::Identity();
   pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud =
-      TransformCloud(cloud, transform_stamped, std::ref(transform_matrix));
+      TransformCloud(cloud, transform_stamped);
   if (!transformed_cloud) {
     RCLCPP_WARN(this->get_logger(), "Cloud transformation failed.");
     return;
@@ -70,9 +71,10 @@ void PointcloudBoxcropNode::PointcloudCallback(
     return;
   }
 
-  Eigen::Matrix4f inverse_transform_matrix = transform_matrix.inverse();
-  pcl::transformPointCloud(*filtered_cloud, *filtered_cloud,
-                           inverse_transform_matrix);
+  geometry_msgs::msg::TransformStamped inverse_transform_stamped =
+      InverseTransform(transform_stamped);
+  pcl_ros::transformPointCloud(*filtered_cloud, *filtered_cloud,
+                               inverse_transform_stamped);
 
   sensor_msgs::msg::PointCloud2 output_msg;
   pcl::toROSMsg(*filtered_cloud, output_msg);
@@ -101,26 +103,13 @@ PointcloudBoxcropNode::GetTransform(const std::string &source_frame) {
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudBoxcropNode::TransformCloud(
     const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
-    const geometry_msgs::msg::TransformStamped &transform_stamped,
-    Eigen::Matrix4f &transform_matrix) {
+    const geometry_msgs::msg::TransformStamped &transform_stamped) {
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud(
       new pcl::PointCloud<pcl::PointXYZ>());
 
   try {
-    transform_matrix.block<3, 3>(0, 0) =
-        Eigen::Quaternionf(transform_stamped.transform.rotation.w,
-                           transform_stamped.transform.rotation.x,
-                           transform_stamped.transform.rotation.y,
-                           transform_stamped.transform.rotation.z)
-            .toRotationMatrix();
-
-    transform_matrix.block<3, 1>(0, 3)
-        << transform_stamped.transform.translation.x,
-        transform_stamped.transform.translation.y,
-        transform_stamped.transform.translation.z;
-
-    pcl::transformPointCloud(*cloud, *transformed_cloud, transform_matrix);
+    pcl_ros::transformPointCloud(*cloud, *transformed_cloud, transform_stamped);
   } catch (const tf2::TransformException &ex) {
     RCLCPP_WARN(this->get_logger(), "Error during cloud transformation: %s",
                 ex.what());
@@ -145,6 +134,34 @@ PointcloudBoxcropNode::Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) {
   crop_box_filter.setNegative(params_.negative);
   crop_box_filter.filter(*filtered_cloud);
   return filtered_cloud;
+}
+
+geometry_msgs::msg::TransformStamped PointcloudBoxcropNode::InverseTransform(
+    const geometry_msgs::msg::TransformStamped &transform_stamped) {
+  tf2::Transform tf2_transform;
+  tf2::fromMsg(transform_stamped.transform, tf2_transform);
+
+  tf2::Transform tf2_inverse = tf2_transform.inverse();
+
+  geometry_msgs::msg::TransformStamped inverse_transform_stamped;
+  inverse_transform_stamped.header.stamp = transform_stamped.header.stamp;
+  inverse_transform_stamped.header.frame_id = transform_stamped.child_frame_id;
+  inverse_transform_stamped.child_frame_id = transform_stamped.header.frame_id;
+
+  geometry_msgs::msg::Transform geom_transform;
+  geom_transform.translation.x = tf2_inverse.getOrigin().x();
+  geom_transform.translation.y = tf2_inverse.getOrigin().y();
+  geom_transform.translation.z = tf2_inverse.getOrigin().z();
+
+  tf2::Quaternion quat = tf2_inverse.getRotation();
+  geom_transform.rotation.x = quat.x();
+  geom_transform.rotation.y = quat.y();
+  geom_transform.rotation.z = quat.z();
+  geom_transform.rotation.w = quat.w();
+
+  inverse_transform_stamped.transform = geom_transform;
+
+  return inverse_transform_stamped;
 }
 
 vision_msgs::msg::BoundingBox3D PointcloudBoxcropNode::CreateBoundingBox() {
