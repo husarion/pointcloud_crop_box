@@ -53,6 +53,7 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 - `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
 - `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
 - `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop box instead of inside.
+- `visualize_bounding_box` [*bool*, default: **true**]: Whether to publish a visualization marker for the bounding box.
 
 ---
 
