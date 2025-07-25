@@ -33,3 +33,7 @@ pointcloud_boxcrop_params:
     type: bool
     default_value: false
     description: "Whether to keep points outside the box"
+  visualize_bounding_box:
+    type: bool
+    default_value: true
+    description: "Whether to publish a visualization marker for the bounding box"

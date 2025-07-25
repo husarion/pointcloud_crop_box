@@ -38,19 +38,3 @@ jobs:
             }
 
         continue-on-error: true
-
-      - name: Retry Build and test (if failed)
-        if: steps.build_test_1.outcome == 'failure'
-        uses: ros-tooling/action-ros-ci@v0.3
-        with:
-          target-ros2-distro: jazzy
-          colcon-defaults: |
-            {
-              "build": {
-                "packages-up-to": ["pointcloud_boxcrop"],
-                "cmake-args": ["-DCMAKE_BUILD_TYPE=Release"]
-              },
-              "test": {
-                "packages-up-to": ["pointcloud_boxcrop"]
-              }
-            }

@@ -3,7 +3,7 @@
 A ROS 2 package for filtering 3D point clouds using an axis-aligned cropping box.
 It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target frame, filters it using a configurable box, and publishes both the filtered cloud and a 3D bounding box message.
 
-<p float="left">
+<p float="center">
   <img src=".docs/forward_ground.png" width="30%" />
   <img src=".docs/inner.png" width="30%" />
   <img src=".docs/forward_wall.png" width="30%" />
@@ -58,8 +58,30 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 
 ## Example Launch
 
-To show the result of the filtering you can follow our autonomy example in [husarion-ugv-autonomy](github.com/husarion/husarion-ugv-autonomy) and run configured launch:
+To show the result of the filtering you can follow our autonomy example in [husarion-ugv-autonomy](github.com/husarion/husarion-ugv-autonomy) to get  measurements of pointcloud.
+
+### Create Workspace
 
 ```bash
+mkdir ~/husarion_ws
+cd ~/husarion_ws
+git clone https://github.com/husarion/pointcloud_boxcrop.git src/pointcloud_boxcrop
+```
+
+### Build
+
+```bash
+sudo rosdep init
+rosdep update --rosdistro $ROS_DISTRO
+rosdep install --from-paths src -y -i
+
+source /opt/ros/$ROS_DISTRO/setup.bash
+colcon build --symlink-install --packages-up-to pointcloud_boxcrop --cmake-args -DCMAKE_BUILD_TYPE=Release
+```
+
+### Run configured launch:
+
+```bash
+source install/setup.bash
 ros2 launch  pointcloud_boxcrop pointcloud_boxcrop_launch.py
 ```

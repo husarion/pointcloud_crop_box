@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.11)
 project(pointcloud_boxcrop)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -10,12 +10,12 @@ set(PACKAGE_DEPENDENCIES
     generate_parameter_library
     pcl_conversions
     pcl_ros
+    rclcpp
+    sensor_msgs
     tf2
     tf2_geometry_msgs
     tf2_ros
     tf2_sensor_msgs
-    rclcpp
-    sensor_msgs
     vision_msgs)
 
 foreach(PACKAGE IN ITEMS ${PACKAGE_DEPENDENCIES})

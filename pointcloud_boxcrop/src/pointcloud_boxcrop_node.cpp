@@ -38,8 +38,14 @@ PointcloudBoxcropNode::PointcloudBoxcropNode()
       params_.input_topic, 10,
       std::bind(&PointcloudBoxcropNode::PointcloudCallback, this,
                 std::placeholders::_1));
-  bbox_pub_ = this->create_publisher<vision_msgs::msg::BoundingBox3D>(
-      "~/filter_bounding_box", 10);
+
+  if (params_.visualize_bounding_box) {
+    RCLCPP_INFO(this->get_logger(), "Bounding box visualization enabled.");
+    bbox_pub_ = this->create_publisher<vision_msgs::msg::BoundingBox3D>(
+        "~/filter_bounding_box", 10);
+  } else {
+    RCLCPP_INFO(this->get_logger(), "Bounding box visualization disabled.");
+  }
 
   RCLCPP_INFO(this->get_logger(), "Initialized successfully.");
 }
@@ -48,15 +54,19 @@ void PointcloudBoxcropNode::PointcloudCallback(
     const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(
       new pcl::PointCloud<pcl::PointXYZ>());
-  pcl::fromROSMsg(*msg, *cloud);
+
+  std::string error_msg;
+  if (!tf_buffer_.canTransform(params_.target_frame, msg->header.frame_id,
+                               tf2::TimePointZero, &error_msg)) {
+    RCLCPP_WARN_STREAM(this->get_logger(),
+                       "Transform not found for frame: " << error_msg);
+    return;
+  }
 
   geometry_msgs::msg::TransformStamped transform_stamped =
       GetTransform(msg->header.frame_id);
-  if (transform_stamped.header.frame_id.empty()) {
-    RCLCPP_WARN_STREAM(this->get_logger(), "Transform not found for frame: "
-                                               << msg->header.frame_id);
-    return;
-  }
+
+  pcl::fromROSMsg(*msg, *cloud);
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud =
       TransformCloud(cloud, transform_stamped);
@@ -82,22 +92,17 @@ void PointcloudBoxcropNode::PointcloudCallback(
 
   pub_->publish(output_msg);
 
-  vision_msgs::msg::BoundingBox3D bbox_msg = CreateBoundingBox();
-  bbox_pub_->publish(bbox_msg);
+  if (params_.visualize_bounding_box) {
+    vision_msgs::msg::BoundingBox3D bbox_msg = CreateBoundingBox();
+    bbox_pub_->publish(bbox_msg);
+  }
 }
 
 geometry_msgs::msg::TransformStamped
 PointcloudBoxcropNode::GetTransform(const std::string &source_frame) {
   geometry_msgs::msg::TransformStamped transform_stamped;
-  try {
-    transform_stamped = tf_buffer_.lookupTransform(
-        params_.target_frame, source_frame, tf2::TimePointZero);
-  } catch (tf2::TransformException &ex) {
-    RCLCPP_WARN_STREAM(this->get_logger(), "Could not transform "
-                                               << params_.target_frame << " to "
-                                               << source_frame << ": "
-                                               << ex.what());
-  }
+  transform_stamped = tf_buffer_.lookupTransform(
+      params_.target_frame, source_frame, tf2::TimePointZero);
   return transform_stamped;
 }
 
