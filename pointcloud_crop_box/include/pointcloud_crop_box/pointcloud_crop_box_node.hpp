@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_
-#define POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_
+#ifndef POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
+#define POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
 
 #include <memory>
 #include <string>
@@ -31,11 +31,11 @@
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 #include <vision_msgs/msg/bounding_box3_d.hpp>
 
-#include "pointcloud_boxcrop/pointcloud_boxcrop_params.hpp"
+#include "pointcloud_crop_box/pointcloud_crop_box_params.hpp"
 
-class PointcloudBoxcropNode : public rclcpp::Node {
+class PointcloudCropBoxNode : public rclcpp::Node {
 public:
-  PointcloudBoxcropNode();
+  PointcloudCropBoxNode();
 
 private:
   void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
@@ -55,8 +55,8 @@ private:
 
   vision_msgs::msg::BoundingBox3D CreateBoundingBox();
 
-  std::shared_ptr<pointcloud_boxcrop_params::ParamListener> param_listener_;
-  pointcloud_boxcrop_params::Params params_;
+  std::shared_ptr<pointcloud_crop_box_params::ParamListener> param_listener_;
+  pointcloud_crop_box_params::Params params_;
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
   rclcpp::Publisher<vision_msgs::msg::BoundingBox3D>::SharedPtr bbox_pub_;
@@ -64,4 +64,4 @@ private:
   tf2_ros::TransformListener tf_listener_;
 };
 
-#endif // POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_POINTCLOUD_BOXCROP_NODE_HPP_
+#endif // POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_

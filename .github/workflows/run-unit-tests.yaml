@@ -29,10 +29,10 @@ jobs:
           colcon-defaults: |
             {
               "build": {
-                "packages-up-to": ["pointcloud_boxcrop"],
+                "packages-up-to": ["pointcloud_crop_box"],
                 "cmake-args": ["-DCMAKE_BUILD_TYPE=Release"]
               },
               "test": {
-                "packages-up-to": ["pointcloud_boxcrop"]
+                "packages-up-to": ["pointcloud_crop_box"]
               }
             }

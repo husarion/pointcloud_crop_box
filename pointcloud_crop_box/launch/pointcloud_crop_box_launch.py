@@ -24,16 +24,16 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     config = os.path.join(
-        get_package_share_directory("pointcloud_boxcrop"),
+        get_package_share_directory("pointcloud_crop_box"),
         "config",
-        "pointcloud_boxcrop_params.yaml",
+        "pointcloud_crop_box_params.yaml",
     )
 
     return LaunchDescription(
         [
             Node(
-                package="pointcloud_boxcrop",
-                executable="pointcloud_boxcrop_node",
+                package="pointcloud_crop_box",
+                executable="pointcloud_crop_box_node",
                 output="screen",
                 parameters=[config],
             ),

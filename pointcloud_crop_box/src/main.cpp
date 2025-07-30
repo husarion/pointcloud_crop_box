@@ -18,20 +18,20 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "pointcloud_boxcrop/pointcloud_boxcrop_node.hpp"
+#include "pointcloud_crop_box/pointcloud_crop_box_node.hpp"
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  auto pointcloud_boxcrop = std::make_shared<PointcloudBoxcropNode>();
+  auto pointcloud_crop_box = std::make_shared<PointcloudCropBoxNode>();
 
   try {
-    rclcpp::spin(pointcloud_boxcrop);
+    rclcpp::spin(pointcloud_crop_box);
   } catch (const std::runtime_error &e) {
-    std::cerr << "[" << pointcloud_boxcrop->get_name()
+    std::cerr << "[" << pointcloud_crop_box->get_name()
               << "] Caught exception: " << e.what() << std::endl;
   }
 
-  std::cout << "[" << pointcloud_boxcrop->get_name() << "] Shutting down"
+  std::cout << "[" << pointcloud_crop_box->get_name() << "] Shutting down"
             << std::endl;
   rclcpp::shutdown();
   return 0;

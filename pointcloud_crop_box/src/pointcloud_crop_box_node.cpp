@@ -22,12 +22,12 @@
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-#include "pointcloud_boxcrop/pointcloud_boxcrop_node.hpp"
+#include "pointcloud_crop_box/pointcloud_crop_box_node.hpp"
 
-PointcloudBoxcropNode::PointcloudBoxcropNode()
-    : rclcpp::Node("pointcloud_boxcrop"), tf_buffer_(this->get_clock()),
+PointcloudCropBoxNode::PointcloudCropBoxNode()
+    : rclcpp::Node("pointcloud_crop_box"), tf_buffer_(this->get_clock()),
       tf_listener_(tf_buffer_) {
-  param_listener_ = std::make_shared<pointcloud_boxcrop_params::ParamListener>(
+  param_listener_ = std::make_shared<pointcloud_crop_box_params::ParamListener>(
       get_node_parameters_interface());
 
   params_ = param_listener_->get_params();
@@ -36,7 +36,7 @@ PointcloudBoxcropNode::PointcloudBoxcropNode()
       params_.output_topic, 10);
   sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
       params_.input_topic, 10,
-      std::bind(&PointcloudBoxcropNode::PointcloudCallback, this,
+      std::bind(&PointcloudCropBoxNode::PointcloudCallback, this,
                 std::placeholders::_1));
 
   if (params_.visualize_bounding_box) {
@@ -50,7 +50,7 @@ PointcloudBoxcropNode::PointcloudBoxcropNode()
   RCLCPP_INFO(this->get_logger(), "Initialized successfully.");
 }
 
-void PointcloudBoxcropNode::PointcloudCallback(
+void PointcloudCropBoxNode::PointcloudCallback(
     const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(
       new pcl::PointCloud<pcl::PointXYZ>());
@@ -97,7 +97,7 @@ void PointcloudBoxcropNode::PointcloudCallback(
 }
 
 geometry_msgs::msg::TransformStamped
-PointcloudBoxcropNode::GetTransform(const std::string &source_frame) {
+PointcloudCropBoxNode::GetTransform(const std::string &source_frame) {
   geometry_msgs::msg::TransformStamped transform_stamped;
 
   try {
@@ -113,7 +113,7 @@ PointcloudBoxcropNode::GetTransform(const std::string &source_frame) {
   return transform_stamped;
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudBoxcropNode::TransformCloud(
+pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudCropBoxNode::TransformCloud(
     const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
     const geometry_msgs::msg::TransformStamped &transform_stamped) {
 
@@ -132,7 +132,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudBoxcropNode::TransformCloud(
 }
 
 pcl::PointCloud<pcl::PointXYZ>::Ptr
-PointcloudBoxcropNode::Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) {
+PointcloudCropBoxNode::Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) {
 
   pcl::CropBox<pcl::PointXYZ> crop_box_filter;
   crop_box_filter.setMin(
@@ -148,7 +148,7 @@ PointcloudBoxcropNode::Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud) {
   return filtered_cloud;
 }
 
-geometry_msgs::msg::TransformStamped PointcloudBoxcropNode::InverseTransform(
+geometry_msgs::msg::TransformStamped PointcloudCropBoxNode::InverseTransform(
     const geometry_msgs::msg::TransformStamped &transform_stamped) {
   tf2::Transform tf2_transform;
   tf2::fromMsg(transform_stamped.transform, tf2_transform);
@@ -176,7 +176,7 @@ geometry_msgs::msg::TransformStamped PointcloudBoxcropNode::InverseTransform(
   return inverse_transform_stamped;
 }
 
-vision_msgs::msg::BoundingBox3D PointcloudBoxcropNode::CreateBoundingBox() {
+vision_msgs::msg::BoundingBox3D PointcloudCropBoxNode::CreateBoundingBox() {
   vision_msgs::msg::BoundingBox3D bbox;
 
   bbox.center.position.x = (params_.min_x + params_.max_x) / 2.0;

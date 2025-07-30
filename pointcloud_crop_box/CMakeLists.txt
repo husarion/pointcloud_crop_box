@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(pointcloud_boxcrop)
+project(pointcloud_crop_box)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic -Wshadow -Wold-style-cast)
@@ -26,21 +26,21 @@ find_package(PCL REQUIRED COMPONENTS filters)
 
 include_directories(include ${PCL_INCLUDE_DIRS})
 
-generate_parameter_library(pointcloud_boxcrop_params
-                           src/pointcloud_boxcrop_params.yaml)
+generate_parameter_library(pointcloud_crop_box_params
+                           src/pointcloud_crop_box_params.yaml)
 
-add_executable(pointcloud_boxcrop_node src/main.cpp
-                                       src/pointcloud_boxcrop_node.cpp)
+add_executable(pointcloud_crop_box_node src/main.cpp
+                                        src/pointcloud_crop_box_node.cpp)
 
-ament_target_dependencies(pointcloud_boxcrop_node ${PACKAGE_DEPENDENCIES})
+ament_target_dependencies(pointcloud_crop_box_node ${PACKAGE_DEPENDENCIES})
 
-target_link_libraries(pointcloud_boxcrop_node ${PCL_LIBRARIES}
-                      pointcloud_boxcrop_params)
+target_link_libraries(pointcloud_crop_box_node ${PCL_LIBRARIES}
+                      pointcloud_crop_box_params)
 target_include_directories(
-  pointcloud_boxcrop_node
+  pointcloud_crop_box_node
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>)
 
-install(TARGETS pointcloud_boxcrop_node DESTINATION lib/${PROJECT_NAME})
+install(TARGETS pointcloud_crop_box_node DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 

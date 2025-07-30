@@ -1,4 +1,4 @@
-# pointcloud_boxcrop
+# pointcloud_crop_box
 
 A ROS 2 package for filtering 3D point clouds using an axis-aligned cropping box.
 It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target frame, filters it using a configurable box, and publishes both the filtered cloud and a 3D bounding box message.
@@ -24,7 +24,7 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 
 ## ROS 2 Node
 
-### `pointcloud_boxcrop_node`
+### `pointcloud_crop_box_node`
 
 #### Subscribes
 
@@ -68,7 +68,7 @@ To show the result of the filtering you can follow our autonomy example in [husa
 ```bash
 mkdir ~/husarion_ws
 cd ~/husarion_ws
-git clone https://github.com/husarion/pointcloud_boxcrop.git src/pointcloud_boxcrop
+git clone https://github.com/husarion/pointcloud_crop_box.git src/pointcloud_crop_box
 ```
 
 ### Build
@@ -79,12 +79,12 @@ rosdep update --rosdistro $ROS_DISTRO
 rosdep install --from-paths src -y -i
 
 source /opt/ros/$ROS_DISTRO/setup.bash
-colcon build --symlink-install --packages-up-to pointcloud_boxcrop --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --symlink-install --packages-up-to pointcloud_crop_box --cmake-args -DCMAKE_BUILD_TYPE=Release
 ```
 
 ### Run configured launch:
 
 ```bash
 source install/setup.bash
-ros2 launch  pointcloud_boxcrop pointcloud_boxcrop_launch.py
+ros2 launch  pointcloud_crop_box pointcloud_crop_box_launch.py
 ```
