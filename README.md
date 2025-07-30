@@ -61,6 +61,8 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 
 To show the result of the filtering you can follow our autonomy example in [husarion-ugv-autonomy](github.com/husarion/husarion-ugv-autonomy) to get  measurements of pointcloud.
 
+## Build from Source
+
 ### Create Workspace
 
 ```bash

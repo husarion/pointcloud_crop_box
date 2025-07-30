@@ -55,16 +55,14 @@ void PointcloudBoxcropNode::PointcloudCallback(
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(
       new pcl::PointCloud<pcl::PointXYZ>());
 
-  std::string error_msg;
-  if (!tf_buffer_.canTransform(params_.target_frame, msg->header.frame_id,
-                               tf2::TimePointZero, &error_msg)) {
-    RCLCPP_WARN_STREAM(this->get_logger(),
-                       "Transform not found for frame: " << error_msg);
-    return;
-  }
-
   geometry_msgs::msg::TransformStamped transform_stamped =
       GetTransform(msg->header.frame_id);
+
+  if (transform_stamped.header.frame_id.empty()) {
+    RCLCPP_WARN_STREAM(this->get_logger(), "No transform found for frame: "
+                                               << msg->header.frame_id);
+    return;
+  }
 
   pcl::fromROSMsg(*msg, *cloud);
 
@@ -101,8 +99,17 @@ void PointcloudBoxcropNode::PointcloudCallback(
 geometry_msgs::msg::TransformStamped
 PointcloudBoxcropNode::GetTransform(const std::string &source_frame) {
   geometry_msgs::msg::TransformStamped transform_stamped;
-  transform_stamped = tf_buffer_.lookupTransform(
-      params_.target_frame, source_frame, tf2::TimePointZero);
+
+  try {
+    transform_stamped = tf_buffer_.lookupTransform(
+        params_.target_frame, source_frame, tf2::TimePointZero);
+  } catch (tf2::TransformException &ex) {
+    RCLCPP_WARN_STREAM(this->get_logger(), "Could not transform "
+                                               << params_.target_frame << " to "
+                                               << source_frame << ": "
+                                               << ex.what());
+  }
+
   return transform_stamped;
 }
 

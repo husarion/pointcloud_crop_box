@@ -36,5 +36,3 @@ jobs:
                 "packages-up-to": ["pointcloud_boxcrop"]
               }
             }
-
-        continue-on-error: true

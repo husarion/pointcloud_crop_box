@@ -24,10 +24,6 @@ endforeach()
 
 find_package(PCL REQUIRED COMPONENTS filters)
 
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
 include_directories(include ${PCL_INCLUDE_DIRS})
 
 generate_parameter_library(pointcloud_boxcrop_params
