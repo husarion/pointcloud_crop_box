@@ -1,0 +1,13 @@
+/**:
+  pointcloud_crop_box:
+    ros__parameters:
+      input_topic: "/panther/velodyne_points"
+      output_topic: "/points_filtered"
+      target_frame: "panther/base_footprint"
+      min_x: -0.405
+      max_x: 0.405
+      min_y: -0.424
+      max_y: 0.424
+      min_z: -0.05
+      max_z: 0.5
+      negative: true

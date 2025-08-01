@@ -1,0 +1,39 @@
+pointcloud_crop_box_params:
+  input_topic:
+    type: string
+    default_value: "/points_raw"
+    description: "Topic to subscribe to incoming PointCloud2 data"
+  output_topic:
+    type: string
+    default_value: "/points_filtered"
+    description: "Topic to publish filtered PointCloud2 data"
+  target_frame:
+    type: string
+    default_value: "base_link"
+    description: "Target TF frame to transform pointcloud into"
+  min_x:
+    type: double
+    default_value: -1.0
+  max_x:
+    type: double
+    default_value: 1.0
+  min_y:
+    type: double
+    default_value: -1.0
+  max_y:
+    type: double
+    default_value: 1.0
+  min_z:
+    type: double
+    default_value: -1.0
+  max_z:
+    type: double
+    default_value: 1.0
+  negative:
+    type: bool
+    default_value: false
+    description: "Whether to keep points outside the box"
+  visualize_bounding_box:
+    type: bool
+    default_value: true
+    description: "Whether to publish a visualization marker for the bounding box"
