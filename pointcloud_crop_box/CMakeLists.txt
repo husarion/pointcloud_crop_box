@@ -8,6 +8,7 @@ endif()
 set(PACKAGE_DEPENDENCIES
     ament_cmake
     generate_parameter_library
+    laser_geometry
     pcl_conversions
     pcl_ros
     rclcpp

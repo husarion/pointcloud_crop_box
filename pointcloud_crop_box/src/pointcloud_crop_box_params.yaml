@@ -2,7 +2,7 @@ pointcloud_crop_box_params:
   input_topic:
     type: string
     default_value: "/points_raw"
-    description: "Topic to subscribe to incoming PointCloud2 data"
+    description: "Topic to subscribe to incoming data"
   output_topic:
     type: string
     default_value: "/points_filtered"
@@ -37,3 +37,9 @@ pointcloud_crop_box_params:
     type: bool
     default_value: true
     description: "Whether to publish a visualization marker for the bounding box"
+  message_type:
+    type: string
+    default_value: "pointcloud"
+    description: "Type of source data to crop, 'pointcloud' or 'lidarscan'"
+    validation:
+      one_of<>: [ [ "pointcloud", "laserscan" ] ]

@@ -34,10 +34,19 @@ PointcloudCropBoxNode::PointcloudCropBoxNode()
 
   pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       params_.output_topic, 10);
-  sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+  if(params_.message_type == "pointcloud"){
+
+    pc2_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
+        params_.input_topic, 10,
+        std::bind(&PointcloudCropBoxNode::PointcloudCallback, this,
+                  std::placeholders::_1));
+  }
+  else {
+    ls_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
       params_.input_topic, 10,
-      std::bind(&PointcloudCropBoxNode::PointcloudCallback, this,
+      std::bind(&PointcloudCropBoxNode::LaserScanCallback, this,
                 std::placeholders::_1));
+  }
 
   if (params_.visualize_bounding_box) {
     RCLCPP_INFO(this->get_logger(), "Bounding box visualization enabled.");
@@ -94,6 +103,13 @@ void PointcloudCropBoxNode::PointcloudCallback(
     vision_msgs::msg::BoundingBox3D bbox_msg = CreateBoundingBox();
     bbox_pub_->publish(bbox_msg);
   }
+}
+
+void PointcloudCropBoxNode::LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg){
+  auto cloud_msg = std::make_shared<sensor_msgs::msg::PointCloud2>();
+
+  projector_.projectLaser(*msg, *cloud_msg);
+  PointcloudCallback(cloud_msg);
 }
 
 geometry_msgs::msg::TransformStamped
