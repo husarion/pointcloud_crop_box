@@ -34,18 +34,17 @@ PointcloudCropBoxNode::PointcloudCropBoxNode()
 
   pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       params_.output_topic, 10);
-  if(params_.message_type == "pointcloud"){
+  if (params_.message_type == "pointcloud") {
 
     pc2_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
         params_.input_topic, 10,
         std::bind(&PointcloudCropBoxNode::PointcloudCallback, this,
                   std::placeholders::_1));
-  }
-  else {
+  } else {
     ls_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-      params_.input_topic, 10,
-      std::bind(&PointcloudCropBoxNode::LaserScanCallback, this,
-                std::placeholders::_1));
+        params_.input_topic, 10,
+        std::bind(&PointcloudCropBoxNode::LaserScanCallback, this,
+                  std::placeholders::_1));
   }
 
   if (params_.visualize_bounding_box) {
@@ -105,7 +104,8 @@ void PointcloudCropBoxNode::PointcloudCallback(
   }
 }
 
-void PointcloudCropBoxNode::LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg){
+void PointcloudCropBoxNode::LaserScanCallback(
+    const sensor_msgs::msg::LaserScan::SharedPtr msg) {
   auto cloud_msg = std::make_shared<sensor_msgs::msg::PointCloud2>();
 
   projector_.projectLaser(*msg, *cloud_msg);
