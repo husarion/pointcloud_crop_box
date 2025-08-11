@@ -1,7 +1,7 @@
 # pointcloud_crop_box
 
 A ROS 2 package for filtering 3D point clouds using an axis-aligned cropping box.
-It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target frame, filters it using a configurable box, and publishes both the filtered cloud and a 3D bounding box message.
+It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`, transforms it into a target frame, filters it using a configurable box, and publishes both the filtered cloud and a 3D bounding box message.
 
 <p float="center">
   <img src=".docs/forward_ground.png" width="30%" />
@@ -28,8 +28,8 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 
 #### Subscribes
 
-- **`<input_topic>`** (*sensor_msgs/msg/PointCloud2*)
-  Input topic containing raw point cloud data (default: `/points_raw`)
+- **`<input_topic>`** (*sensor_msgs/msg/PointCloud2* or *sensor_msgs/msg/LaserScan*)
+  Input topic containing raw data (default: `/points_raw`)
 
 #### Publishes
 
@@ -52,6 +52,7 @@ It subscribes to a `sensor_msgs/msg/PointCloud2`, transforms it into a target fr
 - `max_y` [*double*, default: **1.0**]: Maximum Y boundary of the crop box.
 - `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
 - `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
+- `message_type` [*string*, default: **pointcloud**]: ype of source data to crop, 'pointcloud' or 'lidarscan'.
 - `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop box instead of inside.
 - `visualize_bounding_box` [*bool*, default: **true**]: Whether to publish a visualization marker for the bounding box.
 

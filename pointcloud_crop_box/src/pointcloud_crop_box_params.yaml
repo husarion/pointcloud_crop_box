@@ -29,6 +29,12 @@ pointcloud_crop_box_params:
   max_z:
     type: double
     default_value: 1.0
+  message_type:
+    type: string
+    default_value: "pointcloud"
+    description: "Type of source data to crop, 'pointcloud' or 'lidarscan'"
+    validation:
+      one_of<>: [ [ "pointcloud", "laserscan" ] ]
   negative:
     type: bool
     default_value: false
@@ -37,9 +43,3 @@ pointcloud_crop_box_params:
     type: bool
     default_value: true
     description: "Whether to publish a visualization marker for the bounding box"
-  message_type:
-    type: string
-    default_value: "pointcloud"
-    description: "Type of source data to crop, 'pointcloud' or 'lidarscan'"
-    validation:
-      one_of<>: [ [ "pointcloud", "laserscan" ] ]
