@@ -11,4 +11,4 @@
       negative: true
       message_type: laserscan #or pointcloud
       input_topic: /panther/rplidar/scan
-      output_topic: "/scan_filtered"
+      output_topic: "/points_filtered"
