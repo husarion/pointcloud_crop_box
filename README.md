@@ -52,7 +52,7 @@ It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`,
 - `max_y` [*double*, default: **1.0**]: Maximum Y boundary of the crop box.
 - `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
 - `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
-- `message_type` [*string*, default: **pointcloud**]: ype of source data to crop, 'pointcloud' or 'lidarscan'.
+- `message_type` [*string*, default: **pointcloud**]: type of source data to crop, 'pointcloud' or 'lidarscan'.
 - `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop box instead of inside.
 - `visualize_bounding_box` [*bool*, default: **true**]: Whether to publish a visualization marker for the bounding box.
 
