@@ -2,7 +2,7 @@ pointcloud_crop_box_params:
   input_topic:
     type: string
     default_value: "/points_raw"
-    description: "Topic to subscribe to incoming PointCloud2 data"
+    description: "Topic to subscribe to incoming data"
   output_topic:
     type: string
     default_value: "/points_filtered"
@@ -29,6 +29,12 @@ pointcloud_crop_box_params:
   max_z:
     type: double
     default_value: 1.0
+  message_type:
+    type: string
+    default_value: "pointcloud"
+    description: "Type of source data to crop, 'pointcloud' or 'lidarscan'"
+    validation:
+      one_of<>: [ [ "pointcloud", "laserscan" ] ]
   negative:
     type: bool
     default_value: false

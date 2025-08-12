@@ -19,12 +19,14 @@
 #include <string>
 
 #include <Eigen/Core>
+#include <laser_geometry/laser_geometry.hpp>
 #include <pcl/filters/crop_box.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions/pcl_conversions.h>
 #include <pcl_ros/pcl_ros/transforms.hpp>
 #include <rclcpp/rclcpp.hpp>
 
+#include <sensor_msgs/msg/laser_scan.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
@@ -39,6 +41,7 @@ public:
 
 private:
   void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+  void LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
   geometry_msgs::msg::TransformStamped
   GetTransform(const std::string &source_frame);
@@ -57,11 +60,16 @@ private:
 
   std::shared_ptr<pointcloud_crop_box_params::ParamListener> param_listener_;
   pointcloud_crop_box_params::Params params_;
-  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr sub_;
+
+  rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pc2_sub_;
+  rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr ls_sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
   rclcpp::Publisher<vision_msgs::msg::BoundingBox3D>::SharedPtr bbox_pub_;
+
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
+
+  laser_geometry::LaserProjection projector_;
 };
 
 #endif // POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
