@@ -18,24 +18,25 @@
 #include <memory>
 #include <string>
 
-#include <Eigen/Core>
-#include <laser_geometry/laser_geometry.hpp>
 #include <pcl/filters/crop_box.h>
 #include <pcl/point_types.h>
 #include <pcl_conversions/pcl_conversions/pcl_conversions.h>
+#include <Eigen/Core>
+#include <laser_geometry/laser_geometry.hpp>
 #include <pcl_ros/pcl_ros/transforms.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-#include <sensor_msgs/msg/laser_scan.hpp>
-#include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
+#include <sensor_msgs/msg/laser_scan.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
 #include <vision_msgs/msg/bounding_box3_d.hpp>
 
 #include "pointcloud_crop_box/pointcloud_crop_box_params.hpp"
 
-class PointcloudCropBoxNode : public rclcpp::Node {
+class PointcloudCropBoxNode : public rclcpp::Node
+{
 public:
   PointcloudCropBoxNode();
 
@@ -43,18 +44,16 @@ private:
   void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
   void LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
-  geometry_msgs::msg::TransformStamped
-  GetTransform(const std::string &source_frame);
+  geometry_msgs::msg::TransformStamped GetTransform(const std::string & source_frame);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr
-  TransformCloud(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud,
-                 const geometry_msgs::msg::TransformStamped &transform_stamped);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr TransformCloud(
+    const pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud,
+    const geometry_msgs::msg::TransformStamped & transform_stamped);
 
-  pcl::PointCloud<pcl::PointXYZ>::Ptr
-  Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr Crop(const pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud);
 
   geometry_msgs::msg::TransformStamped InverseTransform(
-      const geometry_msgs::msg::TransformStamped &transform_stamped);
+    const geometry_msgs::msg::TransformStamped & transform_stamped);
 
   vision_msgs::msg::BoundingBox3D CreateBoundingBox();
 
@@ -72,4 +71,4 @@ private:
   laser_geometry::LaserProjection projector_;
 };
 
-#endif // POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
+#endif  // POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
