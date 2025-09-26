@@ -35,13 +35,16 @@
 
 #include "pointcloud_crop_box/pointcloud_crop_box_params.hpp"
 
-class PointcloudCropBoxNode : public rclcpp::Node
+namespace pointcloud_crop_box
+{
+
+class PointCloudCropBoxNode : public rclcpp::Node
 {
 public:
-  PointcloudCropBoxNode();
+  PointCloudCropBoxNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
 
 private:
-  void PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+  void PointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
   void LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
   geometry_msgs::msg::TransformStamped GetTransform(const std::string & source_frame);
@@ -70,5 +73,7 @@ private:
 
   laser_geometry::LaserProjection projector_;
 };
+
+}  // namespace pointcloud_crop_box
 
 #endif  // POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_POINTCLOUD_CROP_BOX_NODE_HPP_
