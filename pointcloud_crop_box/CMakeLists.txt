@@ -12,6 +12,7 @@ set(PACKAGE_DEPENDENCIES
     pcl_conversions
     pcl_ros
     rclcpp
+    rclcpp_components
     sensor_msgs
     tf2
     tf2_geometry_msgs
@@ -30,18 +31,29 @@ include_directories(include ${PCL_INCLUDE_DIRS})
 generate_parameter_library(pointcloud_crop_box_params
                            src/pointcloud_crop_box_params.yaml)
 
-add_executable(pointcloud_crop_box_node src/main.cpp
-                                        src/pointcloud_crop_box_node.cpp)
+add_library(pointcloud_crop_box_node_component SHARED
+            src/pointcloud_crop_box_node.cpp)
 
-ament_target_dependencies(pointcloud_crop_box_node ${PACKAGE_DEPENDENCIES})
+ament_target_dependencies(pointcloud_crop_box_node_component
+                          ${PACKAGE_DEPENDENCIES})
 
-target_link_libraries(pointcloud_crop_box_node ${PCL_LIBRARIES}
+target_link_libraries(pointcloud_crop_box_node_component ${PCL_LIBRARIES}
                       pointcloud_crop_box_params)
 target_include_directories(
-  pointcloud_crop_box_node
+  pointcloud_crop_box_node_component
   PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>)
 
-install(TARGETS pointcloud_crop_box_node DESTINATION lib/${PROJECT_NAME})
+rclcpp_components_register_node(
+  pointcloud_crop_box_node_component PLUGIN
+  "pointcloud_crop_box::PointCloudCropBoxNode" EXECUTABLE
+  pointcloud_crop_box_node)
+
+install(
+  TARGETS pointcloud_crop_box_node_component pointcloud_crop_box_params
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 

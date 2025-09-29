@@ -24,8 +24,13 @@
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
-PointcloudCropBoxNode::PointcloudCropBoxNode()
-: rclcpp::Node("pointcloud_crop_box"), tf_buffer_(this->get_clock()), tf_listener_(tf_buffer_)
+namespace pointcloud_crop_box
+{
+
+PointCloudCropBoxNode::PointCloudCropBoxNode(const rclcpp::NodeOptions & options)
+: rclcpp::Node("pointcloud_crop_box", options),
+  tf_buffer_(this->get_clock()),
+  tf_listener_(tf_buffer_)
 {
   param_listener_ =
     std::make_shared<pointcloud_crop_box_params::ParamListener>(get_node_parameters_interface());
@@ -36,11 +41,11 @@ PointcloudCropBoxNode::PointcloudCropBoxNode()
   if (params_.message_type == "pointcloud") {
     pc2_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
       params_.input_topic, 10,
-      std::bind(&PointcloudCropBoxNode::PointcloudCallback, this, std::placeholders::_1));
+      std::bind(&PointCloudCropBoxNode::PointCloudCallback, this, std::placeholders::_1));
   } else {
     ls_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
       params_.input_topic, 10,
-      std::bind(&PointcloudCropBoxNode::LaserScanCallback, this, std::placeholders::_1));
+      std::bind(&PointCloudCropBoxNode::LaserScanCallback, this, std::placeholders::_1));
   }
 
   if (params_.visualize_bounding_box) {
@@ -54,7 +59,7 @@ PointcloudCropBoxNode::PointcloudCropBoxNode()
   RCLCPP_INFO(this->get_logger(), "Initialized successfully.");
 }
 
-void PointcloudCropBoxNode::PointcloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
+void PointCloudCropBoxNode::PointCloudCallback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>());
 
@@ -96,15 +101,15 @@ void PointcloudCropBoxNode::PointcloudCallback(const sensor_msgs::msg::PointClou
   }
 }
 
-void PointcloudCropBoxNode::LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
+void PointCloudCropBoxNode::LaserScanCallback(const sensor_msgs::msg::LaserScan::SharedPtr msg)
 {
   auto cloud_msg = std::make_shared<sensor_msgs::msg::PointCloud2>();
 
   projector_.projectLaser(*msg, *cloud_msg);
-  PointcloudCallback(cloud_msg);
+  PointCloudCallback(cloud_msg);
 }
 
-geometry_msgs::msg::TransformStamped PointcloudCropBoxNode::GetTransform(
+geometry_msgs::msg::TransformStamped PointCloudCropBoxNode::GetTransform(
   const std::string & source_frame)
 {
   geometry_msgs::msg::TransformStamped transform_stamped;
@@ -121,7 +126,7 @@ geometry_msgs::msg::TransformStamped PointcloudCropBoxNode::GetTransform(
   return transform_stamped;
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudCropBoxNode::TransformCloud(
+pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudCropBoxNode::TransformCloud(
   const pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud,
   const geometry_msgs::msg::TransformStamped & transform_stamped)
 {
@@ -137,7 +142,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudCropBoxNode::TransformCloud(
   return transformed_cloud;
 }
 
-pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudCropBoxNode::Crop(
+pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudCropBoxNode::Crop(
   const pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud)
 {
   pcl::CropBox<pcl::PointXYZ> crop_box_filter;
@@ -151,7 +156,7 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PointcloudCropBoxNode::Crop(
   return filtered_cloud;
 }
 
-geometry_msgs::msg::TransformStamped PointcloudCropBoxNode::InverseTransform(
+geometry_msgs::msg::TransformStamped PointCloudCropBoxNode::InverseTransform(
   const geometry_msgs::msg::TransformStamped & transform_stamped)
 {
   tf2::Transform tf2_transform;
@@ -180,7 +185,7 @@ geometry_msgs::msg::TransformStamped PointcloudCropBoxNode::InverseTransform(
   return inverse_transform_stamped;
 }
 
-vision_msgs::msg::BoundingBox3D PointcloudCropBoxNode::CreateBoundingBox()
+vision_msgs::msg::BoundingBox3D PointCloudCropBoxNode::CreateBoundingBox()
 {
   vision_msgs::msg::BoundingBox3D bbox;
 
@@ -194,3 +199,8 @@ vision_msgs::msg::BoundingBox3D PointcloudCropBoxNode::CreateBoundingBox()
 
   return bbox;
 }
+
+}  // namespace pointcloud_crop_box
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(pointcloud_crop_box::PointCloudCropBoxNode)
