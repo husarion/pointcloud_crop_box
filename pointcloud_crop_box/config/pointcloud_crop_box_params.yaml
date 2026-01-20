@@ -2,13 +2,32 @@
   pointcloud_crop_box:
     ros__parameters:
       target_frame: panther/base_footprint
-      min_x: -0.405
-      max_x: 0.405
-      min_y: -0.424
-      max_y: 0.424
-      min_z: -0.05
-      max_z: 0.5
       negative: true
-      message_type: laserscan #or pointcloud
+      # message_type: laserscan #or pointcloud
+      message_type: pointcloud
       input_topic: /panther/rplidar/scan
       output_topic: "/points_filtered"
+      cropbox_names: ["robot_box", "bottom"]
+      cropboxes:
+        robot_box:
+          min_x: -0.405
+          min_y: -0.424
+          min_z: -0.05
+          max_x: 0.405
+          max_y: 0.424
+          max_z: 0.5
+        right:
+          min_x: -0.6
+          max_x: 0.6
+          min_y: -0.3
+          max_y: -0.2
+          min_z: 0.5
+          max_z: 0.7
+        left:
+          min_x: -0.6
+          max_x: 0.6
+          min_y: 0.3
+          max_y: 0.2
+          min_z: 0.5
+          max_z: 0.7
+      visualize_crop_boxes: true

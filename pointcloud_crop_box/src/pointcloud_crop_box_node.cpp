@@ -48,12 +48,12 @@ PointCloudCropBoxNode::PointCloudCropBoxNode(const rclcpp::NodeOptions & options
       std::bind(&PointCloudCropBoxNode::LaserScanCallback, this, std::placeholders::_1));
   }
 
-  if (params_.visualize_bounding_box) {
-    RCLCPP_INFO(this->get_logger(), "Bounding box visualization enabled.");
-    bbox_pub_ = this->create_publisher<vision_msgs::msg::BoundingBox3D>(
-      "~/filter_bounding_box", 10);
+  if (params_.visualize_crop_boxes) {
+    RCLCPP_INFO(this->get_logger(), "Crop boxes visualization enabled.");
+    marker_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
+      "~/filter_crop_boxes", 10);
   } else {
-    RCLCPP_INFO(this->get_logger(), "Bounding box visualization disabled.");
+    RCLCPP_INFO(this->get_logger(), "Crop boxes visualization disabled.");
   }
 
   RCLCPP_INFO(this->get_logger(), "Initialized successfully.");
@@ -95,9 +95,9 @@ void PointCloudCropBoxNode::PointCloudCallback(const sensor_msgs::msg::PointClou
 
   pub_->publish(output_msg);
 
-  if (params_.visualize_bounding_box) {
-    vision_msgs::msg::BoundingBox3D bbox_msg = CreateBoundingBox();
-    bbox_pub_->publish(bbox_msg);
+  if (params_.visualize_crop_boxes) {
+    auto marker_array = CreateVisualizationMarkers();
+    marker_pub_->publish(marker_array);
   }
 }
 
@@ -146,13 +146,15 @@ pcl::PointCloud<pcl::PointXYZ>::Ptr PointCloudCropBoxNode::Crop(
   const pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud)
 {
   pcl::CropBox<pcl::PointXYZ> crop_box_filter;
-  crop_box_filter.setMin(Eigen::Vector4f(params_.min_x, params_.min_y, params_.min_z, 1.0));
-  crop_box_filter.setMax(Eigen::Vector4f(params_.max_x, params_.max_y, params_.max_z, 1.0));
-  crop_box_filter.setInputCloud(cloud);
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr filtered_cloud(new pcl::PointCloud<pcl::PointXYZ>());
-  crop_box_filter.setNegative(params_.negative);
-  crop_box_filter.filter(*filtered_cloud);
+  crop_box_filter.setInputCloud(cloud);
+  for (auto const & [key, val] : params_.crop_boxes.crop_boxes_names_map) {
+    crop_box_filter.setMin(Eigen::Vector4f(val.min_x, val.min_y, val.min_z, 1.0));
+    crop_box_filter.setMax(Eigen::Vector4f(val.max_x, val.max_y, val.max_z, 1.0));
+    crop_box_filter.setNegative(params_.negative);
+    crop_box_filter.filter(*filtered_cloud);
+    crop_box_filter.setInputCloud(filtered_cloud);
+  }
   return filtered_cloud;
 }
 
@@ -185,19 +187,58 @@ geometry_msgs::msg::TransformStamped PointCloudCropBoxNode::InverseTransform(
   return inverse_transform_stamped;
 }
 
-vision_msgs::msg::BoundingBox3D PointCloudCropBoxNode::CreateBoundingBox()
+visualization_msgs::msg::MarkerArray PointCloudCropBoxNode::CreateVisualizationMarkers()
 {
-  vision_msgs::msg::BoundingBox3D bbox;
+  visualization_msgs::msg::MarkerArray marker_array;
+  for (const auto & [key, val] : params_.crop_boxes.crop_boxes_names_map) {
+    visualization_msgs::msg::Marker marker;
+    marker.header.frame_id = "map";
+    marker.header.stamp = this->now();
+    marker.ns = "bounding_boxes";
+    marker.id = marker_array.markers.size();
+    marker.type = visualization_msgs::msg::Marker::LINE_LIST;
+    marker.action = visualization_msgs::msg::Marker::ADD;
+    marker.scale.x = 0.05;  // Line width
+    marker.color.a = 1.0;   // Fully opaque
+    marker.color.r = 1.0;   // Red color
 
-  bbox.center.position.x = (params_.min_x + params_.max_x) / 2.0;
-  bbox.center.position.y = (params_.min_y + params_.max_y) / 2.0;
-  bbox.center.position.z = (params_.min_z + params_.max_z) / 2.0;
+    // Define the 8 points of the bounding box
+    std::array<Eigen::Vector3f, 8> points = {
+      Eigen::Vector3f(val.min_x, val.min_y, val.min_z),
+      Eigen::Vector3f(val.max_x, val.min_y, val.min_z),
+      Eigen::Vector3f(val.max_x, val.max_y, val.min_z),
+      Eigen::Vector3f(val.min_x, val.max_y, val.min_z),
+      Eigen::Vector3f(val.min_x, val.min_y, val.max_z),
+      Eigen::Vector3f(val.max_x, val.min_y, val.max_z),
+      Eigen::Vector3f(val.max_x, val.max_y, val.max_z),
+      Eigen::Vector3f(val.min_x, val.max_y, val.max_z),
+    };
 
-  bbox.size.x = params_.max_x - params_.min_x;
-  bbox.size.y = params_.max_y - params_.min_y;
-  bbox.size.z = params_.max_z - params_.min_z;
+    // Define the lines that make up the bounding box
+    std::vector<std::pair<int, int>> line_indices = {
+      {0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6},
+      {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7},
+    };
 
-  return bbox;
+    for (const auto & [start, end] : line_indices) {
+      geometry_msgs::msg::Point p_start;
+      p_start.x = points[start].x();
+      p_start.y = points[start].y();
+      p_start.z = points[start].z();
+
+      geometry_msgs::msg::Point p_end;
+      p_end.x = points[end].x();
+      p_end.y = points[end].y();
+      p_end.z = points[end].z();
+
+      marker.points.push_back(p_start);
+      marker.points.push_back(p_end);
+    }
+
+    marker_array.markers.push_back(marker);
+  }
+
+  return marker_array;
 }
 
 }  // namespace pointcloud_crop_box

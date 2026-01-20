@@ -18,7 +18,7 @@ set(PACKAGE_DEPENDENCIES
     tf2_geometry_msgs
     tf2_ros
     tf2_sensor_msgs
-    vision_msgs)
+    visualization_msgs)
 
 foreach(PACKAGE IN ITEMS ${PACKAGE_DEPENDENCIES})
   find_package(${PACKAGE} REQUIRED)
