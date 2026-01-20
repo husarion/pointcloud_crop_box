@@ -190,15 +190,16 @@ geometry_msgs::msg::TransformStamped PointCloudCropBoxNode::InverseTransform(
 visualization_msgs::msg::MarkerArray PointCloudCropBoxNode::CreateVisualizationMarkers()
 {
   visualization_msgs::msg::MarkerArray marker_array;
+  int marker_id = 0;
   for (const auto & [key, val] : params_.crop_boxes.crop_boxes_names_map) {
     visualization_msgs::msg::Marker marker;
-    marker.header.frame_id = "map";
+    marker.header.frame_id = params_.target_frame;
     marker.header.stamp = this->now();
-    marker.ns = "bounding_boxes";
-    marker.id = marker_array.markers.size();
+    marker.ns = key;
+    marker.id = marker_id++;
     marker.type = visualization_msgs::msg::Marker::LINE_LIST;
     marker.action = visualization_msgs::msg::Marker::ADD;
-    marker.scale.x = 0.05;  // Line width
+    marker.scale.x = 0.01;  // Line width
     marker.color.a = 1.0;   // Fully opaque
     marker.color.r = 1.0;   // Red color
 
