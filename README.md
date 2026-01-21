@@ -1,7 +1,7 @@
 # pointcloud_crop_box
 
-A ROS 2 package for filtering 3D point clouds using an axis-aligned cropping box.
-It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`, transforms it into a target frame, filters it using a configurable box, and publishes both the filtered cloud and a 3D bounding box message.
+A ROS 2 package for filtering 3D point clouds using multiple axis-aligned cropping boxes.
+It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`, transforms it into a target frame, filters it using configurable crop boxes, and publishes both the filtered cloud and visualization markers for the crop boxes.
 
 <p float="center">
   <img src=".docs/forward_ground.png" width="30%" />
@@ -14,11 +14,11 @@ It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`,
 
 ## Features
 
-- Subscribes to raw point cloud data (e.g., from a LiDAR)
-- Filters the cloud using a configurable 3D bounding box
+- Subscribes to raw point cloud data (e.g., from a LiDAR) or laser scan data
+- Filters the cloud using multiple configurable 3D crop boxes
 - Supports TF2 transformation to a target frame
-- Option to invert the box (i.e., remove inside instead of outside)
-- Publishes the filtered cloud and a 3D bounding box marker
+- Option to invert the box filtering (i.e., remove inside instead of outside)
+- Publishes the filtered cloud and visualization markers for the crop boxes
 
 ---
 
@@ -36,8 +36,8 @@ It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`,
 - **`<output_topic>`** (*sensor_msgs/msg/PointCloud2*)
   Filtered point cloud after box cropping (default: `/points_filtered`)
 
-- **`~/filter_bounding_box`** (*vision_msgs/msg/BoundingBox3D*)
-  The axis-aligned box used for filtering, for visualization or debugging
+- **`~/filter_crop_boxes`** (*visualization_msgs/msg/MarkerArray*)
+  Visualization markers for all configured crop boxes, for visualization and debugging
 
 ---
 
@@ -46,15 +46,58 @@ It subscribes to a `sensor_msgs/msg/PointCloud2` or `sensor_msgs/msg/LaserScan`,
 - `input_topic` [*string*, default: **"/points_raw"**]: Topic to subscribe for input PointCloud2 data.
 - `output_topic` [*string*, default: **"/points_filtered"**]: Topic to publish filtered PointCloud2 data.
 - `target_frame` [*string*, default: **"base_link"**]: Target TF frame to transform the point cloud into.
-- `min_x` [*double*, default: **-1.0**]: Minimum X boundary of the crop box.
-- `max_x` [*double*, default: **1.0**]: Maximum X boundary of the crop box.
-- `min_y` [*double*, default: **-1.0**]: Minimum Y boundary of the crop box.
-- `max_y` [*double*, default: **1.0**]: Maximum Y boundary of the crop box.
-- `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
-- `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
-- `message_type` [*string*, default: **pointcloud**]: type of source data to crop, 'pointcloud' or 'lidarscan'.
-- `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop box instead of inside.
-- `visualize_bounding_box` [*bool*, default: **true**]: Whether to publish a visualization marker for the bounding box.
+- `crop_boxes_names` [*string_array*, default: **["robot_box"]**]: List of crop box names to apply sequentially.
+- `crop_boxes` [*map*]: Configuration for multiple crop boxes, with each crop box having the following parameters:
+  - `min_x` [*double*, default: **-1.0**]: Minimum X boundary of the crop box.
+  - `max_x` [*double*, default: **1.0**]: Maximum X boundary of the crop box.
+  - `min_y` [*double*, default: **-1.0**]: Minimum Y boundary of the crop box.
+  - `max_y` [*double*, default: **1.0**]: Maximum Y boundary of the crop box.
+  - `min_z` [*double*, default: **-1.0**]: Minimum Z boundary of the crop box.
+  - `max_z` [*double*, default: **1.0**]: Maximum Z boundary of the crop box.
+- `message_type` [*string*, default: **"pointcloud"**]: type of source data to crop, 'pointcloud' or 'laserscan'.
+- `negative` [*bool*, default: **false**]: If true, keeps points **outside** the crop boxes instead of inside.
+- `visualize_crop_boxes` [*bool*, default: **true**]: Whether to publish visualization markers for the crop boxes.
+
+---
+
+## Configuration
+
+### Multiple Crop Boxes
+
+This package supports multiple crop boxes that are applied sequentially to filter the point cloud. You can configure multiple crop boxes in the parameter file:
+
+```yaml
+/**:
+  pointcloud_crop_box:
+    ros__parameters:
+      target_frame: base_link
+      crop_boxes_names: ["robot_box", "robot_attachment_1", "robot_attachment_2"]
+      crop_boxes:
+        robot_box:
+          min_x: -0.5
+          max_x: 0.5
+          min_y: -0.5
+          max_y: 0.5
+          min_z: -0.1
+          max_z: 0.3
+        robot_attachment_1:
+          min_x: -2.0
+          max_x: 2.0
+          min_y: -1.0
+          max_y: 1.0
+          min_z: 0.5
+          max_z: 2.0
+        robot_attachment_2:
+          min_x: -5.0
+          max_x: 5.0
+          min_y: -5.0
+          max_y: 5.0
+          min_z: 2.5
+          max_z: 5.0
+      negative: false
+      message_type: pointcloud
+      visualize_crop_boxes: true
+```
 
 ---
 

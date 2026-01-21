@@ -11,24 +11,30 @@ pointcloud_crop_box_params:
     type: string
     default_value: "base_link"
     description: "Target TF frame to transform pointcloud into"
-  min_x:
-    type: double
-    default_value: -1.0
-  max_x:
-    type: double
-    default_value: 1.0
-  min_y:
-    type: double
-    default_value: -1.0
-  max_y:
-    type: double
-    default_value: 1.0
-  min_z:
-    type: double
-    default_value: -1.0
-  max_z:
-    type: double
-    default_value: 1.0
+  crop_boxes_names:
+    type: string_array
+    default_value: ["robot_box"]
+    description: "List of crop boxes to apply"
+  crop_boxes:
+    __map_crop_boxes_names:
+      min_x:
+        type: double
+        default_value: -1.0
+      max_x:
+        type: double
+        default_value: 1.0
+      min_y:
+        type: double
+        default_value: -1.0
+      max_y:
+        type: double
+        default_value: 1.0
+      min_z:
+        type: double
+        default_value: -1.0
+      max_z:
+        type: double
+        default_value: 1.0
   message_type:
     type: string
     default_value: "pointcloud"
@@ -39,7 +45,7 @@ pointcloud_crop_box_params:
     type: bool
     default_value: false
     description: "Whether to keep points outside the box"
-  visualize_bounding_box:
+  visualize_crop_boxes:
     type: bool
     default_value: true
-    description: "Whether to publish a visualization marker for the bounding box"
+    description: "Whether to publish a visualization marker for the crop boxes"

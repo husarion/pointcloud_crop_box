@@ -31,7 +31,8 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
-#include <vision_msgs/msg/bounding_box3_d.hpp>
+#include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 #include "pointcloud_crop_box/pointcloud_crop_box_params.hpp"
 
@@ -58,7 +59,7 @@ private:
   geometry_msgs::msg::TransformStamped InverseTransform(
     const geometry_msgs::msg::TransformStamped & transform_stamped);
 
-  vision_msgs::msg::BoundingBox3D CreateBoundingBox();
+  visualization_msgs::msg::MarkerArray CreateVisualizationMarkers();
 
   std::shared_ptr<pointcloud_crop_box_params::ParamListener> param_listener_;
   pointcloud_crop_box_params::Params params_;
@@ -66,7 +67,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pc2_sub_;
   rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr ls_sub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pub_;
-  rclcpp::Publisher<vision_msgs::msg::BoundingBox3D>::SharedPtr bbox_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr marker_pub_;
 
   tf2_ros::Buffer tf_buffer_;
   tf2_ros::TransformListener tf_listener_;
