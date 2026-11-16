@@ -38,13 +38,16 @@ PointCloudCropBoxNode::PointCloudCropBoxNode(const rclcpp::NodeOptions & options
   params_ = param_listener_->get_params();
 
   pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(params_.output_topic, 10);
+  // Subscribe best effort: LiDAR drivers (the Ouster's among them) publish sensor data best effort,
+  // and a reliable subscription never matches such a publisher. A best-effort subscription matches
+  // reliable publishers too.
   if (params_.message_type == "pointcloud") {
     pc2_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(
-      params_.input_topic, 10,
+      params_.input_topic, rclcpp::SensorDataQoS(),
       std::bind(&PointCloudCropBoxNode::PointCloudCallback, this, std::placeholders::_1));
   } else {
     ls_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-      params_.input_topic, 10,
+      params_.input_topic, rclcpp::SensorDataQoS(),
       std::bind(&PointCloudCropBoxNode::LaserScanCallback, this, std::placeholders::_1));
   }
 
